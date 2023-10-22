@@ -27,7 +27,7 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
-public class index {
+public class Index {
 
 
 	public static void main(String[] args) throws IOException {
@@ -35,7 +35,9 @@ public class index {
         /* analyzer per tokenizzare */
 		Map<String, Analyzer> perFieldAnalyzers = new HashMap<>();
 		
+		// perFieldAnalyzers.put("nome", new WhitespaceAnalyzer()); 
 		perFieldAnalyzers.put("nome", new WhitespaceAnalyzer()); 
+
 		
 		
 		Analyzer a = CustomAnalyzer.builder().withTokenizer(WhitespaceTokenizerFactory.class).addTokenFilter(LowerCaseFilterFactory.class)
