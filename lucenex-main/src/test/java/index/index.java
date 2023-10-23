@@ -9,13 +9,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
-import org.apache.lucene.analysis.core.WhitespaceTokenizerFactory;
-import org.apache.lucene.analysis.custom.CustomAnalyzer;
+import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
 import org.apache.lucene.analysis.it.ItalianAnalyzer;
 import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
-import org.apache.lucene.analysis.miscellaneous.WordDelimiterGraphFilterFactory;
-import org.apache.lucene.codecs.simpletext.SimpleTextCodec;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
@@ -32,42 +29,21 @@ public class Index {
 		/* analyzer per tokenizzare */
 		Map<String, Analyzer> perFieldAnalyzers = new HashMap<>();
 
-		/* mi piacerebbe aggiungere anche un analyzer per la stopWord ".txt" */
-		Analyzer a1 = CustomAnalyzer.builder()
-				.withTokenizer(WhitespaceTokenizerFactory.class)
-				.addTokenFilter(LowerCaseFilterFactory.class)
-				.build();
+	    /* analyzer per il nome */
+		perFieldAnalyzers.put("nome", new StandardAnalyzer());
 
-		perFieldAnalyzers.put("nome", a1);
-
-		/* mi piacerebbe aggiungere anche un analyzer per le stopWords elencate sotto */
-		Analyzer a2 = CustomAnalyzer.builder()
-				.withTokenizer(WhitespaceTokenizerFactory.class)
-				.addTokenFilter(LowerCaseFilterFactory.class)
-				.addTokenFilter(WordDelimiterGraphFilterFactory.class).build();
-		/* addTokenFilter(StopFilterFactory.class,"in", "dei", "di", "e", "il", "la", "lo",
-						"i", "le", "gli", "un", "una", "che", "con").build(); */
-		
-		/* WordDelimiterGraphFilterFactory: Questo è un filtro analizzatore che gestisce la 
-		 * suddivisione di parole in token più piccoli in base a criteri specifici. Questo 
-		 * filtro è particolarmente utile per trattare parole composite, parole con caratteri
-		 *  speciali e casi di camelCase. Suddivide le parole in base a varie regole, come 
-		 *  l'eliminazione dei caratteri speciali, la gestione degli acronimi e la 
-		 *  suddivisione delle parole composite. Ad esempio, "Hello-World" può 
-		 *  essere suddiviso in "Hello" e "World". */
-
-		perFieldAnalyzers.put("contenuto", a2);
+	    /* analyzer per il contenuto */
+		perFieldAnalyzers.put("contenuto", new WhitespaceAnalyzer());
 
 		Analyzer analyzer = new PerFieldAnalyzerWrapper(new ItalianAnalyzer(), perFieldAnalyzers);
 
-		Directory directory = FSDirectory.open(Paths.get("/Users/fabio/Desktop/index_HM2_IDD")); // Define where to save Lucene index
+		Directory directory = FSDirectory.open(Paths.get("target/index_HM2_IDD")); // Define where to save Lucene index
 		IndexWriterConfig config = new IndexWriterConfig(analyzer); // text processing semantics for
-		config.setCodec(new SimpleTextCodec());  // per vedere cosa c'è nell'indice
 		IndexWriter writer = new IndexWriter(directory, config);   // Define an IndexWriter
 
-
+        /* eclipse-workspace/lucene-main.zip_expanded/lucenex-main/target */
 		/* Creo un ciclo per scorrere i file nella directory locale */
-		File directoryPath = new File("/Users/fabio/Desktop/file_HM2_IDD");
+		File directoryPath = new File("target/file_HM2_IDD");
 		File[] files = directoryPath.listFiles();
 
 		/* Itera su ciascun file nella directory e aggiungilo all'indice utilizzando IndexWriter. 
