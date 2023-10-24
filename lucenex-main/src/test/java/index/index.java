@@ -29,19 +29,23 @@ public class Index {
 		/* analyzer per tokenizzare */
 		Map<String, Analyzer> perFieldAnalyzers = new HashMap<>();
 
-	    /* analyzer per il nome */
-		perFieldAnalyzers.put("nome", new StandardAnalyzer());
+		/* analyzer per il nome */
+		perFieldAnalyzers.put("nome", new WhitespaceAnalyzer());
 
-	    /* analyzer per il contenuto */
-		perFieldAnalyzers.put("contenuto", new WhitespaceAnalyzer());
+		/* analyzer per il contenuto */
+		perFieldAnalyzers.put("contenuto", new StandardAnalyzer());
 
+		/* così viene usato StandardAnalyzer come analizzatore predefinito e perFieldAnalyzers per 
+		 * specificare gli analizzatori da utilizzare per campi specifici. Ciò significa che, quando 
+		 * si indicizza un documento, il testo nei campi "nome" e "contenuto" verrà elaborato con 
+		 * ItalianAnalyzer, mentre il testo in altri campi verrà elaborato con StandardAnalyzer */
 		Analyzer analyzer = new PerFieldAnalyzerWrapper(new ItalianAnalyzer(), perFieldAnalyzers);
 
 		Directory directory = FSDirectory.open(Paths.get("target/index_HM2_IDD")); // Define where to save Lucene index
 		IndexWriterConfig config = new IndexWriterConfig(analyzer); // text processing semantics for
 		IndexWriter writer = new IndexWriter(directory, config);   // Define an IndexWriter
 
-        /* eclipse-workspace/lucene-main.zip_expanded/lucenex-main/target */
+		/* eclipse-workspace/lucene-main.zip_expanded/lucenex-main/target */
 		/* Creo un ciclo per scorrere i file nella directory locale */
 		File directoryPath = new File("target/file_HM2_IDD");
 		File[] files = directoryPath.listFiles();
@@ -62,7 +66,7 @@ public class Index {
 				try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
 					String line;
 					while ((line = reader.readLine()) != null) {
-						TextField contentField = new TextField("contenuto", line, Field.Store.NO);
+						TextField contentField = new TextField("contenuto", line, Field.Store.YES);
 						document.add(contentField);
 					}
 				}

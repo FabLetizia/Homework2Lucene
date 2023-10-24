@@ -10,9 +10,12 @@ import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.PhraseQuery;
+import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -21,7 +24,7 @@ public class Search {
 
 	public static void main(String[] args) throws IOException, ParseException {
 
-		Directory directory = FSDirectory.open(Paths.get("target/index_HM2_IDD")); // Define where to save Lucene index
+		Directory directory = FSDirectory.open(Paths.get("target/index_HM2_IDD")); 
 		IndexReader reader = DirectoryReader.open(directory); // obtain read access to the index 
 		IndexSearcher searcher = new IndexSearcher(reader);
 
@@ -42,14 +45,19 @@ public class Search {
 
 			String[] parole = queryString.split(" ");
 
-			PhraseQuery.Builder builder = new PhraseQuery.Builder();
+			// Crea un oggetto BooleanQuery
+			BooleanQuery.Builder booleanQueryBuilder = new BooleanQuery.Builder();
+
 			for(String parola: parole) {
-				builder.add(new Term(field,parola));
+			    // Crea una query di termine per ogni parola
+				Query termQuery = new TermQuery(new Term(field, parola));
+			    // Aggiungi la query di termine alla BooleanQuery con un operatore OR
+				booleanQueryBuilder.add(termQuery, BooleanClause.Occur.SHOULD);
 			}
-			PhraseQuery phraseQuery = builder.build();
+			// Costruisci la BooleanQuery finale
+			BooleanQuery booleanQuery = booleanQueryBuilder.build();
 
-
-			TopDocs hits = searcher.search(phraseQuery, 5); //search for the top 1 document that match the query 
+			TopDocs hits = searcher.search(booleanQuery, 8); //search for the top 8 documents that match the query 
 			for (int i = 0; i < hits.scoreDocs.length; i++) {
 				ScoreDoc scoreDoc = hits.scoreDocs[i];
 				int docId = scoreDoc.doc;
@@ -61,7 +69,7 @@ public class Search {
 				System.out.println("Mi dispiace, non ci sono documenti che soddisfano la tua richiesta");
 			}
 
-			System.out.print("Scrivi exit se non vuoi fare altre query, digita qualunque cosa per continuare: ");
+			System.out.print("Scrivi exit se non vuoi fare altre query, digita qualunque altra cosa per continuare: ");
 			BufferedReader buffReader3 = new BufferedReader(new InputStreamReader(System.in));
 			field = buffReader3.readLine().toLowerCase();
 			if(field.equals("exit")){
