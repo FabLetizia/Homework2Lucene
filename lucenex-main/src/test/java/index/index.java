@@ -35,17 +35,17 @@ public class Index {
 		/* analyzer per il contenuto */
 		perFieldAnalyzers.put("contenuto", new StandardAnalyzer());
 
-		/* così viene usato StandardAnalyzer come analizzatore predefinito e perFieldAnalyzers per 
+		/* così viene usato ItalianAnalyzer come analizzatore predefinito e perFieldAnalyzers per 
 		 * specificare gli analizzatori da utilizzare per campi specifici. Ciò significa che, quando 
 		 * si indicizza un documento, il testo nei campi "nome" e "contenuto" verrà elaborato con 
-		 * ItalianAnalyzer, mentre il testo in altri campi verrà elaborato con StandardAnalyzer */
+		 * WhiteSpaceAnalyzer e StandardAnalyzer rispettivamente, mentre il testo in altri campi 
+		 * verrà elaborato con ItalianAnalyzer */
 		Analyzer analyzer = new PerFieldAnalyzerWrapper(new ItalianAnalyzer(), perFieldAnalyzers);
 
 		Directory directory = FSDirectory.open(Paths.get("target/index_HM2_IDD")); // Define where to save Lucene index
 		IndexWriterConfig config = new IndexWriterConfig(analyzer); // text processing semantics for
 		IndexWriter writer = new IndexWriter(directory, config);   // Define an IndexWriter
 
-		/* eclipse-workspace/lucene-main.zip_expanded/lucenex-main/target */
 		/* Creo un ciclo per scorrere i file nella directory locale */
 		File directoryPath = new File("target/file_HM2_IDD");
 		File[] files = directoryPath.listFiles();
