@@ -1,4 +1,4 @@
-#HOMEWORK 2 INGEGNERIA DEI DATI (LUCENE)
+# HOMEWORK 2 INGEGNERIA DEI DATI (LUCENE)
 Programma Java che rispetta questi requisiti:
 A partire dal codice github dell'ing. Tommaso Teofili (https://github.com/tteofili/lucenex):
 1) Scrivere un programma Java che indicizza i file .txt contenuti in una directory del proprio laptop. In particolare, si devono considerare due campi
